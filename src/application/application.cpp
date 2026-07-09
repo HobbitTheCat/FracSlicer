@@ -48,7 +48,7 @@ void Application::Init() {
 
     this->fractal_renderer.init("res/shaders/fractal_renderer/vertex.glsl", "res/shaders/fractal_renderer/fragment.glsl");
         
-    this->slice_renderer.init("res/shaders/slice_renderer/vertex.glsl", "res/shaders/slice_renderer/fragment.glsl", 1920, 1080, 200.0f, 200.0f);
+    this->slice_renderer.init("res/shaders/slice_renderer/vertex.glsl", "res/shaders/slice_renderer/fragment.glsl", 1920, 1080, 218.88f, 122.88f);
 
     this->camera.fov = 45.0f;
     this->camera.cameraDist = 5.0f;

@@ -38,6 +38,14 @@ target_include_directories(project_core
 )
 
 target_compile_options(project_core PRIVATE -Wall -Wextra)
+
+target_compile_options(project_core PUBLIC -ftemplate-depth=512) 
+target_link_libraries(project_core PUBLIC TBB::tbb)
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_link_options(project_core PUBLIC -ltbb)
+endif()
+
 set_source_files_properties(${VENDOR_FILES} PROPERTIES COMPILE_OPTIONS "-w")
 
 if (ENABLE_DEBUG_FEATURES)

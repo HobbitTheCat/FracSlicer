@@ -91,6 +91,10 @@ GLuint SliceRenderer::render_to_texture(int width, int height, const glm::mat4& 
     this->shader->setVec3("sliceColor", glm::vec3(0.0f, 0.8, 1.0f));
     this->shader->setVec2("plane_size", this->physical_size);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+    
     glBindVertexArray(quad_vao);
     for (const auto& layer : this->layers) {
         shader->setFloat("z_offset", static_cast<float>(layer.z_offset));
@@ -101,6 +105,9 @@ GLuint SliceRenderer::render_to_texture(int width, int height, const glm::mat4& 
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
+
+    glDepthMask(GL_TRUE);
+    glDisable(GL_BLEND);
 
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -120,8 +127,8 @@ void SliceRenderer::setup_framebuffer(int width, int height) {
     glGenTextures(1, &scene_texture_id);
     glBindTexture(GL_TEXTURE_2D, scene_texture_id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, scene_texture_id, 0);
 
     glGenRenderbuffers(1, &rbo);

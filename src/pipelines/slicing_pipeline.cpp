@@ -38,7 +38,8 @@ void SlicingPipeline::start_slicing(
 
     this->task_future = std::async(std::launch::async, [this, model, target_iteration, plane_normal, initial_z_offset, printer, encoder](){
 
-        double layer_thickness = printer.get_layer_height();
+        double layer_thickness = printer.mm_to_world_z(printer.get_layer_height());
+        double initial_z_offset_mm = printer.world_to_mm(initial_z_offset);
         int layer_id = 0;
         bool has_found_geometry = false;
 
@@ -79,20 +80,22 @@ void SlicingPipeline::start_slicing(
             RasterizationService::rasterize_layer(context, printer, {1920, 1080, true});
 
             // Step 4: Save to .goo
-            // printf("Step 4: Save to .goo\n");
-            // encoder->write_layer(z_offset, context.layer_encoder);
+            printf("Step 4: Save to .goo\n");
+            encoder->write_layer(z_offset, context.layer_encoder);
 
             // Step 5: Generation of preview
-            // printf("Step 5: preview generation\n");
-            // LayerPreview preview;
-            // preview.layer_id = layer_id;
-            // preview.z_offset = z_offset;
-            // preview.buffer = std::move(context.preview_buffer);
+            printf("Step 5: preview generation\n");
+            LayerPreview preview;
+            preview.layer_id = layer_id;
 
-            // {
-                // std::lock_guard<std::mutex> lock(this->queue_mutex);
-                // this->preview_queue.push(std::move(preview));
-            // }
+            double layer_thickness_mm = printer.get_layer_height();
+            preview.z_offset = initial_z_offset_mm + layer_id * layer_thickness_mm;
+            preview.buffer = std::move(context.preview_buffer);
+
+            {
+                std::lock_guard<std::mutex> lock(this->queue_mutex);
+                this->preview_queue.push(std::move(preview));
+            }
 
             // progress update
             layer_id ++;

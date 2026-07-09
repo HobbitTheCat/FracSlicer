@@ -22,7 +22,9 @@ public:
     double get_layer_height() const {return this->layer_height;}
     
     std::pair<int, int> world_to_pixel(double x, double y) const;
-    double mm_to_world_z(double z_mm) const;    
+    double mm_to_world_z(double z_mm) const;
+
+    double world_to_mm(double w) const {return this->scale * w;}
 };
 
 #endif //PROJECT_FRAC_SLICER_PRINTER_H
