@@ -2,6 +2,7 @@
 #define PROJECT_FRAC_SLICER_FRACTAL_GUI_H
 
 #include "core/fractal_model.h"
+#include "renderer/edge_renderer.h"
 #include "renderer/ui_structures.h"
 #include "pipelines/interactive_view.h"
 #include "pipelines/slicing_pipeline.h"
@@ -16,6 +17,7 @@ private:
     InteractiveViewer& viewer;
     SlicingPipeline& slicer;
     FractalRenderer& frac_renderer;
+    EdgeRenderer& edge_renderer;
     SliceRenderer& slice_renderer;
 
     std::shared_ptr<const FractalModel>& current_model;
@@ -41,10 +43,11 @@ public:
         InteractiveViewer& v, 
         SlicingPipeline& s,
         FractalRenderer& fr, 
+        EdgeRenderer& er,
         SliceRenderer& sr,
         std::shared_ptr<const FractalModel>& model,
         CameraControls& cam
-    ) : viewer(v), slicer(s), frac_renderer(fr), slice_renderer(sr), current_model(model), camera(cam) {}
+    ) : viewer(v), slicer(s), frac_renderer(fr), edge_renderer(er), slice_renderer(sr), current_model(model), camera(cam) {}
 
     void render();
 };

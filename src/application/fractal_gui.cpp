@@ -168,8 +168,8 @@ void FractalGui::draw_slicer_tab() {
     if (ImGui::Button("Start Slicing to .goo", ImVec2(-1, 40))) {
         slicer_error_msg = "";
         try {
-            slice_renderer.clear_layers();
-            
+            // slice_renderer.clear_layers();
+            edge_renderer.clear_edges();
             std::string config_path = config_path_buf;
             std::string output_path = output_path_buf;
 
@@ -210,7 +210,8 @@ void FractalGui::draw_viewport() {
     view = glm::rotate(view, glm::radians(camera.yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
     if (slicer.is_working() || !this->interactive_tab_open) {
-        texture_id = slice_renderer.render_to_texture(size.x, size.y, view, projection);
+        // texture_id = slice_renderer.render_to_texture(size.x, size.y, view, projection);
+        texture_id = edge_renderer.render_to_texture(size.x, size.y, view, projection);
     } else {
         texture_id = frac_renderer.render_to_texture(size.x, size.y, view, projection);
     }

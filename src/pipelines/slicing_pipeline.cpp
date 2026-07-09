@@ -11,6 +11,8 @@
 #include <future>
 #include <mutex>
 #include <queue>
+#include <thread>
+#include <utility>
 #include <vector>
 
 SlicingPipeline::~SlicingPipeline () {
@@ -33,7 +35,7 @@ void SlicingPipeline::start_slicing(
 
     {
         std::lock_guard<std::mutex> lock(queue_mutex);
-        std::queue<LayerPreview>().swap(this->preview_queue);
+        std::queue<std::vector<Edge>>().swap(this->preview_queue);
     }
 
     this->task_future = std::async(std::launch::async, [this, model, target_iteration, plane_normal, initial_z_offset, printer, encoder](){
@@ -45,7 +47,7 @@ void SlicingPipeline::start_slicing(
         auto cancel_pred = [this]() { return this->should_cancel.load(); };
 
         while (!this->should_cancel.load()) {
-            printf("Layer id: %d\n", layer_id);
+            printf("Layer id: %d, ", layer_id);
             double z_offset = initial_z_offset + layer_id * layer_thickness;
 
             SliceContext context;
@@ -58,7 +60,7 @@ void SlicingPipeline::start_slicing(
             
             // Step 1: generate fractal layer
             printf("Step 1: generate fractal layer\n");
-            context.layer_meshes = FractalGenerator::evaluate(*model, target_iteration, culling_filter, nullptr, cancel_pred);
+            context.layer_meshes = FractalGenerator::evaluate(*model, target_iteration, nullptr, nullptr, cancel_pred);
 
             if (this->should_cancel.load()) break;
 
@@ -74,9 +76,14 @@ void SlicingPipeline::start_slicing(
             printf("Step 2: Layer slicing\n");
             LayerSlicer::slice_layer(context, *model);
 
+            {
+                std::lock_guard<std::mutex> lock(this->queue_mutex);
+                this->preview_queue.push(std::move(context.flat_edges));
+            }
+
             // Step 3: Rasterization
-            printf("Step 3: Rasterization\n");
-            RasterizationService::rasterize_layer(context, printer, {1920, 1080, true});
+            // printf("Step 3: Rasterization\n");
+            // RasterizationService::rasterize_layer(context, printer, {1920, 1080, true});
 
             // Step 4: Save to .goo
             // printf("Step 4: Save to .goo\n");
@@ -93,7 +100,7 @@ void SlicingPipeline::start_slicing(
                 // std::lock_guard<std::mutex> lock(this->queue_mutex);
                 // this->preview_queue.push(std::move(preview));
             // }
-
+            
             // progress update
             layer_id ++;
             if (layer_id > 1000) {printf("ERROR: Slicing pipeline: Too much layers\n"); break;}
@@ -104,7 +111,7 @@ void SlicingPipeline::start_slicing(
     });
 }
 
-bool SlicingPipeline::update(std::vector<LayerPreview>& out_previews) {
+bool SlicingPipeline::update(std::vector<std::vector<Edge>>& out_previews) {
     bool has_new_data = false;
 
     {

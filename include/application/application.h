@@ -7,6 +7,7 @@
 #include "core/fractal_model.h"
 #include "pipelines/interactive_view.h"
 #include "pipelines/slicing_pipeline.h"
+#include "renderer/edge_renderer.h"
 #include "renderer/fractal_renderer.h"
 #include "renderer/slice_renderer.h"
 #include "fractal_gui.h"
@@ -25,6 +26,7 @@ private:
 
     FractalRenderer fractal_renderer;
     SliceRenderer slice_renderer;
+    EdgeRenderer edge_renderer;
 
     std::unique_ptr<FractalGui> gui;
 

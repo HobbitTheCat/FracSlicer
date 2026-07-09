@@ -93,14 +93,16 @@ namespace LayerSlicer {
             if (face_intersections.size() == 2) {
                 result.push_back({
                     project_to_2d(face_intersections[0]),
-                    project_to_2d(face_intersections[1])
+                    project_to_2d(face_intersections[1]),
+                    z_offset
                 });
             }
             else if (face_intersections.size() > 2) {
                 for (std::size_t i = 0; i < face_intersections.size() - 1; i += 2) {
                     result.push_back({
                         project_to_2d(face_intersections[i]),
-                        project_to_2d(face_intersections[i + 1])
+                        project_to_2d(face_intersections[i + 1]),
+                        z_offset
                     });
                 }
             }

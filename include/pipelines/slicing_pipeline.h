@@ -5,6 +5,7 @@
 #include "core/printer.h"
 
 #include "encoder/goo_encoder.h"
+#include "pipelines/pipe_data.h"
 
 #include <cstdint>
 #include <future>
@@ -28,7 +29,7 @@ private:
     std::atomic<bool> should_cancel{false};
 
     std::mutex queue_mutex;
-    std::queue<LayerPreview> preview_queue;
+    std::queue<std::vector<Edge>> preview_queue;
 
 public:
     SlicingPipeline() = default;
@@ -43,7 +44,7 @@ public:
         std::shared_ptr<encoder::GooEncoder> encoder // TODO Create an Encoder abstraction layer
     );
 
-    bool update(std::vector<LayerPreview>& out_previews);
+    bool update(std::vector<std::vector<Edge>>& out_previews);
 
     bool is_working() const {return this->is_busy.load();}
     float get_progress() const {return this->progress.load();}

@@ -8,6 +8,8 @@
 struct Edge {
     arma::vec2 p0; // intersection plane basis coords
     arma::vec2 p1;
+
+    double z_offset;
 };
 
 struct SliceContext {       // TODO найти место получше для этого struct если оно есть

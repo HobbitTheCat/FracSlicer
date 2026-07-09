@@ -6,6 +6,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include <GLFW/glfw3.h>
+#include <vector>
 
 void Application::Init() {
     if (!glfwInit()) {
@@ -47,7 +48,7 @@ void Application::Init() {
     ImGui_ImplOpenGL3_Init("#version 330");
 
     this->fractal_renderer.init("res/shaders/fractal_renderer/vertex.glsl", "res/shaders/fractal_renderer/fragment.glsl");
-        
+    this->edge_renderer.init("res/shaders/edge_renderer/vertex.glsl", "res/shaders/edge_renderer/fragment.glsl");
     this->slice_renderer.init("res/shaders/slice_renderer/vertex.glsl", "res/shaders/slice_renderer/fragment.glsl", 1920, 1080, 200.0f, 200.0f);
 
     this->camera.fov = 45.0f;
@@ -61,6 +62,7 @@ void Application::Init() {
         this->interactive_viewer,
         this->slicing_pipeline,
         this->fractal_renderer,
+        this->edge_renderer,
         this->slice_renderer,
         this->current_model,
         this->camera
@@ -89,10 +91,11 @@ void Application::Run() {
             this->fractal_renderer.update_geometry(new_geo.vertices, new_geo.indices);
         }
 
-        std::vector<LayerPreview> new_previews;
+        std::vector<std::vector<Edge>> new_previews;
         if (this->slicing_pipeline.update(new_previews)) {
             for (const auto& preview : new_previews) {
-                this->slice_renderer.add_layer(preview.layer_id, preview.z_offset, preview.buffer);
+                this->edge_renderer.add_edges(preview);
+                // this->slice_renderer.add_layer(preview.layer_id, preview.z_offset, preview.buffer);
             }
         }
 
