@@ -44,7 +44,7 @@ public:
                 return [n, d](const MeshInstance& inst) -> bool {
                     arma::rowvec center; double radius;
                     compute_bounding_sphere(inst, center, radius);
-                    return std::abs(arma::dot(n, center) + d) <= radius;
+                    return std::abs(arma::dot(n, center) - d) <= radius;
                 };
         }
     }

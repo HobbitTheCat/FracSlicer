@@ -60,7 +60,7 @@ void SlicingPipeline::start_slicing(
             
             // Step 1: generate fractal layer
             printf("Step 1: generate fractal layer\n");
-            context.layer_meshes = FractalGenerator::evaluate(*model, target_iteration, nullptr, nullptr, cancel_pred);
+            context.layer_meshes = FractalGenerator::evaluate(*model, target_iteration, culling_filter, nullptr, cancel_pred);
 
             if (this->should_cancel.load()) break;
 
