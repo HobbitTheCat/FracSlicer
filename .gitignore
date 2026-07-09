@@ -1,0 +1,9 @@
+build/
+.devenv/
+.direnv/
+devenv.lock
+devenv.yaml
+.envrc
+
+compile_commands.json
+.cache/
