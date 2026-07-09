@@ -3,6 +3,7 @@
 
 #include "core/fractal_model.h"
 #include "pipelines/pipe_data.h"
+#include <vector>
 
 namespace LayerSlicer {
 
@@ -17,16 +18,14 @@ namespace LayerSlicer {
     /**
      * @brief Computes plane intersection for a single instance and stores vertives in a buffer
      * 
-     * TODO: Avoiding any interanl allocations or temporary structures
      */
-    void compute_instance_intersection(
+    std::vector<Edge> compute_instance_intersection(
         const MeshInstance &inst,
         const MeshTemplate &tmpl, 
         const arma::vec3 &plane_normal, 
-        const arma::vec3& local_U,
-        const arma::vec3& local_V,
-        double z_offset, 
-        Edge* out_edge_ptr
+        double z_offset,
+        const arma::vec3& local_u,
+        const arma::vec3& local_v
     );
     
 } // namespace LayerSlicer
