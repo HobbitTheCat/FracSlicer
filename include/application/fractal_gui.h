@@ -35,6 +35,7 @@ private:
     void draw_slicer_tab();
     void draw_viewport();
 
+    bool interactive_tab_open = true;
 public:
     FractalGui(
         InteractiveViewer& v, 

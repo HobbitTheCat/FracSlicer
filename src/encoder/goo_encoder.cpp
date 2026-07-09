@@ -2,6 +2,7 @@
 #include "encoder/config_parser.h"
 #include "encoder/constants.h"
 
+#include <cstdio>
 #include <stdexcept>
 
 namespace encoder {
@@ -134,10 +135,9 @@ void GooEncoder::write_layer(float z_offset, const LayerEncoder& layer_data) {
 }
 
 void GooEncoder::write_layer(const Layer& layer_params, const LayerEncoder& layer_data) {
-    if (this->layer_written >= this->header.total_layers) {
-        throw std::runtime_error("Attempted to write more layers than specified in total_layers");
-    }
-
+    // if (this->layer_written >= this->header.total_layers) {
+    //     throw std::runtime_error("Attempted to write more layers than specified in total_layers");
+    // }
     this->writer.write_u16_be(layer_params.pause ? 1 : 0);
     this->writer.write_f32_be(layer_params.pause_position_z);
     this->writer.write_f32_be(layer_params.layer_position_z);
@@ -157,18 +157,14 @@ void GooEncoder::write_layer(const Layer& layer_params, const LayerEncoder& laye
     this->writer.write_u16_be(layer_params.light_pwm);
 
     this->writer.write_bytes(constants::DELIMITER);
-
     const auto& compressed_data = layer_data.get_data();
     uint32_t data_size = static_cast<uint32_t>(compressed_data.size()) + 2; 
     this->writer.write_u32_be(data_size);
-
     // 3. Image data
     this->writer.write_u8(0x55); // Magic number at the begin of this field
     this->writer.write_bytes(compressed_data);
     this->writer.write_u8(layer_data.get_checksum()); // Checksum at the end
-
     this->writer.write_bytes(constants::DELIMITER);
-
     this->layer_written++;
 }
 

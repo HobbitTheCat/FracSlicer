@@ -52,6 +52,7 @@ void SlicingPipeline::start_slicing(
             context.layer_id = layer_id;
             context.z_offset = z_offset;
             context.plane_normal = plane_normal;
+            printf("Z offset %f\n", z_offset);
 
             auto culling_filter = FractalFilters::plane_intersection(plane_normal, z_offset, 0);
             
@@ -63,8 +64,11 @@ void SlicingPipeline::start_slicing(
 
             if (context.layer_meshes.empty()) {
                 if (has_found_geometry) { printf("Fractal has ended\n"); break;}  // if fractal has ended
-                else layer_id ++; {printf("Fractal did not start\n"); continue;}     // if fractal did not start
-            } else {has_found_geometry = true;}
+                else {layer_id++; printf("Fractal did not start\n"); continue;}   // if fractal did not start
+            } else {
+                printf("There is %ld instances\n", context.layer_meshes.size());
+                has_found_geometry = true;
+            }
 
             // Step 2: Layer slicing
             printf("Step 2: Layer slicing\n");
@@ -75,23 +79,24 @@ void SlicingPipeline::start_slicing(
             RasterizationService::rasterize_layer(context, printer, {1920, 1080, true});
 
             // Step 4: Save to .goo
-            printf("Step 4: Save to .goo\n");
-            encoder->write_layer(z_offset, context.layer_encoder);
+            // printf("Step 4: Save to .goo\n");
+            // encoder->write_layer(z_offset, context.layer_encoder);
 
             // Step 5: Generation of preview
-            printf("Step 5: preview generation\n");
-            LayerPreview preview;
-            preview.layer_id = layer_id;
-            preview.z_offset = z_offset;
-            preview.buffer = std::move(context.preview_buffer);
+            // printf("Step 5: preview generation\n");
+            // LayerPreview preview;
+            // preview.layer_id = layer_id;
+            // preview.z_offset = z_offset;
+            // preview.buffer = std::move(context.preview_buffer);
 
-            {
-                std::lock_guard<std::mutex> lock(this->queue_mutex);
-                this->preview_queue.push(std::move(preview));
-            }
+            // {
+                // std::lock_guard<std::mutex> lock(this->queue_mutex);
+                // this->preview_queue.push(std::move(preview));
+            // }
 
             // progress update
             layer_id ++;
+            if (layer_id > 1000) {printf("ERROR: Slicing pipeline: Too much layers\n"); break;}
         }
 
         encoder->close();

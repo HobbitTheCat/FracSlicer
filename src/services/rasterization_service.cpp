@@ -88,7 +88,7 @@ namespace RasterizationService {
 
                 if (preview.enabled && preview_y >= 0) {
                     int p_start_x = static_cast<int>(start_x * scale_x);
-                    int p_end_x = static_cast<int>(end_x * start_x);
+                    int p_end_x = static_cast<int>(end_x * scale_x);
 
                     p_end_x = std::min(p_end_x, preview.width);
 

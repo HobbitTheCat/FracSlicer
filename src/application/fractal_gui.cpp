@@ -33,11 +33,13 @@ void FractalGui::render() {
 
     if (ImGui::BeginTabBar("MainMainTabs")) {
         if (ImGui::BeginTabItem("3D Viewver")) {
+            this->interactive_tab_open = true;
             draw_interactive_tab();
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Slicer")) {
+            this->interactive_tab_open = false;
             draw_slicer_tab();
             ImGui::EndTabItem();
         }
@@ -135,7 +137,6 @@ void FractalGui::draw_slicer_tab() {
 
     ImGui::Text("Export Settings");
 
-    ImGui::SameLine();
     if (ImGui::Button("Browse##Config")) {
         IGFD::FileDialogConfig config;
         config.path = "res/printers_json";
@@ -144,7 +145,6 @@ void FractalGui::draw_slicer_tab() {
         ImGuiFileDialog::Instance()->OpenDialog("ChooseConfigDlg", "Choose Printer Config", ".json", config);
     }
 
-    ImGui::SameLine();
     if (ImGui::Button("Save As##Output")) {
         IGFD::FileDialogConfig config;
         config.path = "res";
@@ -168,6 +168,8 @@ void FractalGui::draw_slicer_tab() {
     if (ImGui::Button("Start Slicing to .goo", ImVec2(-1, 40))) {
         slicer_error_msg = "";
         try {
+            slice_renderer.clear_layers();
+            
             std::string config_path = config_path_buf;
             std::string output_path = output_path_buf;
 
@@ -207,7 +209,7 @@ void FractalGui::draw_viewport() {
     view = glm::rotate(view, glm::radians(camera.pitch), glm::vec3(-1.0f, 0.0f, 0.0f));
     view = glm::rotate(view, glm::radians(camera.yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    if (slicer.is_working() || /* логика проверки активной вкладки */ false) {
+    if (slicer.is_working() || !this->interactive_tab_open) {
         texture_id = slice_renderer.render_to_texture(size.x, size.y, view, projection);
     } else {
         texture_id = frac_renderer.render_to_texture(size.x, size.y, view, projection);
