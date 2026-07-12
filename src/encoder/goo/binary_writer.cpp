@@ -1,4 +1,4 @@
-#include "encoder/binary_writer.h"
+#include "encoder/goo/binary_writer.h"
 
 #include <cstdint>
 #include <ios>

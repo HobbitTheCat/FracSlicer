@@ -1,6 +1,7 @@
 #include "services/rasterization_service.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <list>
 #include <stdexcept>
 #include <string>
@@ -80,10 +81,10 @@ namespace RasterizationService {
                 if (start_x >= width || end_x <= 0 || start_x >= end_x) continue; // TODO Maybe add throw error
 
                 if (start_x > current_x) {
-                    context.layer_encoder.add_run(start_x - current_x, 0x00);
+                    context.pixel_spans.push_back({static_cast<uint32_t>(start_x - current_x), 0x00});
                     total_decompressed_pixels += (start_x - current_x);
                 }
-                context.layer_encoder.add_run(end_x - start_x, 0xFF);
+                context.pixel_spans.push_back({static_cast<uint32_t>(end_x - start_x), 0xFF});
                 total_decompressed_pixels += (end_x - start_x);
 
                 if (preview.enabled && preview_y >= 0) {
@@ -102,7 +103,7 @@ namespace RasterizationService {
             }
 
             if (current_x < width) {
-                context.layer_encoder.add_run(width - current_x, 0x00);
+                context.pixel_spans.push_back({static_cast<uint32_t>(width - current_x), 0x00});
                 total_decompressed_pixels += (width - current_x);
             }
         }

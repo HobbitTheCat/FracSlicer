@@ -9,7 +9,7 @@
 
 
 namespace encoder {
-    class GooEncoder {
+    class GooEncoder{
     private:
         void write_header_internal();
 

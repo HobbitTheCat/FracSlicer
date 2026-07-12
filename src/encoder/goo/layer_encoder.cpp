@@ -1,4 +1,4 @@
-#include "encoder/layer_encoder.h"
+#include "encoder/goo/layer_encoder.h"
 
 #include <cmath>
 #include <cstdint>

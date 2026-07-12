@@ -1,6 +1,7 @@
 #include "application/fractal_gui.h"
 #include "core/printer.h"
 #include "io/fractal_import.h"
+#include "encoder/goo/goo_exporter.h"
 
 #include "imgui/imgui.h"
 #include "imguifiledialog/ImGuiFileDialog.h"
@@ -180,8 +181,8 @@ void FractalGui::draw_slicer_tab() {
             std::string config_path = config_path_buf;
             std::string output_path = output_path_buf;
 
-            auto encoder = std::make_shared<encoder::GooEncoder>(config_path, output_path);
-            Printer printer = encoder->get_printer(scale_1_to_mm);
+            auto exporter = std::make_shared<encoder::GooExporter>(config_path, output_path);
+            Printer printer = exporter->get_printer(scale_1_to_mm);
             Printer::PrintableArea area = printer.get_printable_area();
             this->slice_renderer.update_physical_size(area.width_mm, area.height_mm);
 
@@ -191,7 +192,7 @@ void FractalGui::draw_slicer_tab() {
                 plane_settings.normal.z
             };
 
-            slicer.start_slicing(current_model, iteration, arma_normal, plane_settings.z_offset, printer, encoder);
+            slicer.start_slicing(current_model, iteration, arma_normal, plane_settings.z_offset, printer, exporter);
         } catch (const std::exception& e) {
             slicer_error_msg = e.what();
         }

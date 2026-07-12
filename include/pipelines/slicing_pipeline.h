@@ -4,7 +4,7 @@
 #include "core/fractal_model.h"
 #include "core/printer.h"
 
-#include "encoder/goo_encoder.h"
+#include "encoder/exporter.h"
 
 #include <cstdint>
 #include <future>
@@ -40,7 +40,7 @@ public:
         const arma::rowvec& plane_normal,
         double initial_z_offset,
         const Printer& printer,
-        std::shared_ptr<encoder::GooEncoder> encoder // TODO Create an Encoder abstraction layer
+        std::shared_ptr<encoder::SliceExporter> encoder // TODO Create an Encoder abstraction layer
     );
 
     bool update(std::vector<LayerPreview>& out_previews);

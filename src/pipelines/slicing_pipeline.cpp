@@ -23,7 +23,7 @@ void SlicingPipeline::start_slicing(
     const arma::rowvec& plane_normal,
     double initial_z_offset,
     const Printer& printer, // TODO Check if a printer is needed here, or if I can just retrieve it from the encoder using `get_printer`
-    std::shared_ptr<encoder::GooEncoder> encoder
+    std::shared_ptr<encoder::SliceExporter> encoder
 ) {
     if (this->is_busy.load()) return;
 
@@ -83,7 +83,7 @@ void SlicingPipeline::start_slicing(
             double layer_thickness_mm = printer.get_layer_height();
             float z_offset_mm = initial_z_offset_mm + layer_id * layer_thickness_mm;
             printf("Step 4: Save to .goo\n");
-            encoder->write_layer(z_offset_mm, context.layer_encoder);
+            encoder->write_layer(z_offset_mm, context.pixel_spans);
 
             // Step 5: Generation of preview
             printf("Step 5: preview generation\n");

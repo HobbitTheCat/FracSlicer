@@ -1,4 +1,4 @@
-#include "encoder/config_parser.h"
+#include "encoder/goo/config_parser.h"
 #include "io/json_read.h"
 
 #include "nlohmann_json/json.hpp"
