@@ -4,6 +4,12 @@
 #include "imgui/imgui.h"
 #include "imguifiledialog/ImGuiFileDialog.h"
 #include <exception>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+#include <glm/trigonometric.hpp>
 #include <memory>
 
 void FractalGui::render() {
@@ -204,15 +210,38 @@ void FractalGui::draw_viewport() {
     ImVec2 size = ImGui::GetContentRegionAvail();
     GLuint texture_id = 0;
 
+    // Camera
     glm::mat4 projection = glm::perspective(glm::radians(camera.fov), size.x / size.y, 0.1f, 1000.0f);
     glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -camera.cameraDist));
     view = glm::rotate(view, glm::radians(camera.pitch), glm::vec3(-1.0f, 0.0f, 0.0f));
     view = glm::rotate(view, glm::radians(camera.yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
+    // Plane
+    glm::mat4 plane_model = glm::mat4(1.0f);
+    if (this->show_plane) {
+        glm::vec3 local_normal(0.0f, 0.0f, 1.0f);
+        glm::vec3 target_normal = glm::normalize(this->plane_settings.normal);
+        glm::mat4 rotation = glm::mat4(1.0f);
+
+        float cos_theta = glm::dot(local_normal, target_normal);
+        if (cos_theta < 0.999f) {
+            if (cos_theta < -0.999f) rotation = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            else {
+                glm::vec3 rotation_axis = glm::cross(local_normal, target_normal);
+                rotation = glm::rotate(glm::mat4(1.0f), glm::acos(cos_theta), rotation_axis);
+            }
+        }
+
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), target_normal * this->plane_settings.z_offset);
+        glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(this->plane_settings.size, this->plane_settings.size, 1.0f));
+
+        plane_model = translation * rotation * scale;
+    }
+    
     if (slicer.is_working() || !this->interactive_tab_open) {
         texture_id = slice_renderer.render_to_texture(size.x, size.y, view, projection);
     } else {
-        texture_id = frac_renderer.render_to_texture(size.x, size.y, view, projection);
+        texture_id = frac_renderer.render_to_texture(size.x, size.y, view, projection, this->show_plane, plane_model);
     }
 
     if (texture_id != 0) {
