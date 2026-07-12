@@ -149,3 +149,7 @@ void SliceRenderer::cleanup_framebuffer() {
     if (scene_texture_id) glDeleteTextures(1, &scene_texture_id);
     if (rbo) glDeleteRenderbuffers(1, &rbo);
 }
+
+void SliceRenderer::update_physical_size(float phys_width, float phys_height) {
+    this->physical_size = glm::vec2(phys_width, phys_height);
+}

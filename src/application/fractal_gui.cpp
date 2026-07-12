@@ -1,4 +1,5 @@
 #include "application/fractal_gui.h"
+#include "core/printer.h"
 #include "io/fractal_import.h"
 
 #include "imgui/imgui.h"
@@ -181,6 +182,8 @@ void FractalGui::draw_slicer_tab() {
 
             auto encoder = std::make_shared<encoder::GooEncoder>(config_path, output_path);
             Printer printer = encoder->get_printer(scale_1_to_mm);
+            Printer::PrintableArea area = printer.get_printable_area();
+            this->slice_renderer.update_physical_size(area.width_mm, area.height_mm);
 
             arma::rowvec arma_normal = {
                 plane_settings.normal.x, 

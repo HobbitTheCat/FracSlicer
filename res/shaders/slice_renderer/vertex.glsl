@@ -10,7 +10,7 @@ uniform vec2 plane_size;
 out vec2 TexCoord;
 
 void main() {
-    vec3 world_pos = vec3(aPos.x * plane_size.x, aPos.y * plane_size.y, z_offset);
+    vec3 world_pos = vec3(aPos.x * plane_size.x, z_offset, aPos.y * plane_size.y);
     gl_Position = projection * view * vec4(world_pos, 1.0);
     TexCoord = aTexCoord;
 }

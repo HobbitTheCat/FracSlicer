@@ -90,7 +90,6 @@ void SlicingPipeline::start_slicing(
             LayerPreview preview;
             preview.layer_id = layer_id;
 
-            
             preview.z_offset = z_offset_mm; 
             preview.buffer = std::move(context.preview_buffer);
 

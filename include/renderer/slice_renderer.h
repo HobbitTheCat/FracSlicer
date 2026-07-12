@@ -50,6 +50,7 @@ public:
 
     GLuint render_to_texture(int width, int height, const glm::mat4& view_matrix, const glm::mat4& projection_matrix);
 
+    void update_physical_size(float phys_width, float phys_height);
 };
 
 #endif //PROJECT_FRAC_SLICER_SLICE_RENDERER_H
