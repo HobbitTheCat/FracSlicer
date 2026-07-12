@@ -14,6 +14,8 @@ private:
     GLuint vao = 0, vbo = 0, ebo = 0;
     GLsizei index_count = 0;
 
+    GLuint plane_vao = 0, plane_vbo = 0;
+
     GLuint fbo = 0;
     GLuint texture_id = 0;
     GLuint rbo = 0;
@@ -31,7 +33,13 @@ public:
 
     void update_geometry(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
 
-    GLuint render_to_texture(int width, int height, const glm::mat4& view_matrix, const glm::mat4& projection_matrix);
+    GLuint render_to_texture(
+        int width, int height,
+        const glm::mat4& view_matrix,
+        const glm::mat4& projection_matrix,
+        bool draw_plane,
+        const glm::mat4& plane_model_matrix
+    );
 };
 
 #endif //PROJECT_FRAC_SLICER_FRACTAL_RENDERER_H
