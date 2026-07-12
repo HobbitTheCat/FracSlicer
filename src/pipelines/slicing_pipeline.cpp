@@ -80,16 +80,18 @@ void SlicingPipeline::start_slicing(
             RasterizationService::rasterize_layer(context, printer, {1920, 1080, true});
 
             // Step 4: Save to .goo
+            double layer_thickness_mm = printer.get_layer_height();
+            float z_offset_mm = initial_z_offset_mm + layer_id * layer_thickness_mm;
             printf("Step 4: Save to .goo\n");
-            encoder->write_layer(z_offset, context.layer_encoder);
+            encoder->write_layer(z_offset_mm, context.layer_encoder);
 
             // Step 5: Generation of preview
             printf("Step 5: preview generation\n");
             LayerPreview preview;
             preview.layer_id = layer_id;
 
-            double layer_thickness_mm = printer.get_layer_height();
-            preview.z_offset = initial_z_offset_mm + layer_id * layer_thickness_mm;
+            
+            preview.z_offset = z_offset_mm; 
             preview.buffer = std::move(context.preview_buffer);
 
             {
