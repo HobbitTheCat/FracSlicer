@@ -89,10 +89,19 @@ void SliceRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
         
     for (const auto& layer : this->layers) {
         glm::mat4 slice_to_printer = glm::mat4(1.0f);
-        slice_to_printer = glm::translate(slice_to_printer, 
-                    glm::vec3(this->physical_size.x / 2.0f, this->physical_size.y / 2.0f, static_cast<float>(layer.z_offset)));
+        slice_to_printer = glm::translate(
+                    slice_to_printer, 
+                    glm::vec3(
+                        this->physical_size.x / 2.0f,
+                        this->physical_size.y / 2.0f, 
+                        static_cast<float>(layer.z_offset)
+                    )
+        );
+            
+        // slice_to_printer = glm::rotate(slice_to_printer, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
         slice_to_printer = glm::scale(slice_to_printer, 
-                    glm::vec3(this->physical_size.x, this->physical_size.y, 1.0f));
+                glm::vec3(this->physical_size.x, this->physical_size.y, 1.0f));
 
         glm::mat4 model = this->m_printer_to_world * slice_to_printer;
         
