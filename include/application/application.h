@@ -26,6 +26,8 @@ private:
     FractalRenderer fractal_renderer;
     SliceRenderer slice_renderer;
 
+    Scene scene;
+
     std::unique_ptr<FractalGui> gui;
 
 public:

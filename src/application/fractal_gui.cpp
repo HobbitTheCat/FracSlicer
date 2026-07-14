@@ -4,6 +4,7 @@
 
 #include "imgui/imgui.h"
 #include "imguifiledialog/ImGuiFileDialog.h"
+#include <cstdint>
 #include <exception>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_transform.hpp>
@@ -185,6 +186,13 @@ void FractalGui::draw_slicer_tab() {
             Printer::PrintableArea area = printer.get_printable_area();
             this->slice_renderer.update_physical_size(area.width_mm, area.height_mm);
 
+            arma::mat44 arma_mat = printer.get_printer_to_world_matrix();
+            glm::mat4 glm_mat(1.0f);
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                    glm_mat[j][i] = static_cast<float>(arma_mat(i, j));
+            this->slice_renderer.set_printer_to_world_matrix(glm_mat);
+            
             arma::rowvec arma_normal = {
                 plane_settings.normal.x, 
                 plane_settings.normal.y, 
@@ -211,7 +219,6 @@ void FractalGui::draw_viewport() {
     ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
     ImVec2 size = ImGui::GetContentRegionAvail();
-    GLuint texture_id = 0;
 
     // Camera
     glm::mat4 projection = glm::perspective(glm::radians(camera.fov), size.x / size.y, 0.1f, 1000.0f);
@@ -221,7 +228,7 @@ void FractalGui::draw_viewport() {
 
     // Plane
     glm::mat4 plane_model = glm::mat4(1.0f);
-    if (this->show_plane) {
+    if (this->show_plane && this->interactive_tab_open) {
         glm::vec3 local_normal(0.0f, 0.0f, 1.0f);
         glm::vec3 target_normal = glm::normalize(this->plane_settings.normal);
         glm::mat4 rotation = glm::mat4(1.0f);
@@ -240,13 +247,17 @@ void FractalGui::draw_viewport() {
 
         plane_model = translation * rotation * scale;
     }
+
+    scene.clear_renderers();
     
     if (slicer.is_working() || !this->interactive_tab_open) {
-        texture_id = slice_renderer.render_to_texture(size.x, size.y, view, projection);
+        scene.add_renderer(&slice_renderer);
     } else {
-        texture_id = frac_renderer.render_to_texture(size.x, size.y, view, projection, this->show_plane, plane_model);
+        frac_renderer.set_plane_settings(this->show_plane, plane_model);
+        scene.add_renderer(&frac_renderer);
     }
 
+    GLuint texture_id = scene.render_scene(size.x, size.y, view, projection);
     if (texture_id != 0) {
         ImGui::Image((void*)(intptr_t)texture_id, size, ImVec2(0, 1), ImVec2(1, 0));
     }
