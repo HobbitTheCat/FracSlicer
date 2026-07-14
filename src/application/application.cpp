@@ -62,6 +62,7 @@ void Application::Init() {
         this->slicing_pipeline,
         this->fractal_renderer,
         this->slice_renderer,
+        this->scene,
         this->current_model,
         this->camera
     );
@@ -151,7 +152,7 @@ void Application::scroll_callback(GLFWwindow *window, double xoffset, double yof
     auto* app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
     if (!app) return;
 
-    app->camera.cameraDist -= static_cast<float>(yoffset) * 0.05f;
+    app->camera.cameraDist -= static_cast<float>(yoffset) * 0.5f;
     if (app->camera.cameraDist < 0.5f) app->camera.cameraDist = 0.5f;
-    if (app->camera.cameraDist > 100.0f) app->camera.cameraDist = 100.0f;
+    if (app->camera.cameraDist > 200.0f) app->camera.cameraDist = 200.0f;
 }

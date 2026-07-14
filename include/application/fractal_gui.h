@@ -7,6 +7,7 @@
 #include "pipelines/slicing_pipeline.h"
 #include "renderer/fractal_renderer.h"
 #include "renderer/slice_renderer.h"
+#include "renderer/scene.h"
 
 #include <memory>
 #include <string>
@@ -17,6 +18,7 @@ private:
     SlicingPipeline& slicer;
     FractalRenderer& frac_renderer;
     SliceRenderer& slice_renderer;
+    Scene& scene;
 
     std::shared_ptr<const FractalModel>& current_model;
     CameraControls& camera;
@@ -42,9 +44,10 @@ public:
         SlicingPipeline& s,
         FractalRenderer& fr, 
         SliceRenderer& sr,
+        Scene& scn,
         std::shared_ptr<const FractalModel>& model,
         CameraControls& cam
-    ) : viewer(v), slicer(s), frac_renderer(fr), slice_renderer(sr), current_model(model), camera(cam) {}
+    ) : viewer(v), slicer(s), frac_renderer(fr), slice_renderer(sr), scene(scn), current_model(model), camera(cam) {}
 
     void render();
 };

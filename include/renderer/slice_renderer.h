@@ -1,6 +1,7 @@
 #ifndef PROJECT_FRAC_SLICER_SLICE_RENDERER_H
 #define PROJECT_FRAC_SLICER_SLICE_RENDERER_H
 
+#include "renderer/renderer.h"
 #include "shader.h"
 
 #include <GL/glew.h>
@@ -18,7 +19,7 @@ struct SliceLayerGL {
     GLuint texture_id;
 };
 
-class SliceRenderer {
+class SliceRenderer : public IRenderer{
 private:
     std::unique_ptr<Shader> shader = nullptr;
     GLuint quad_vao = 0, quad_vbo = 0;
@@ -29,28 +30,24 @@ private:
     int texture_height = 0;
     glm::vec2 physical_size;
 
-    GLuint fbo = 0;
-    GLuint rbo = 0;
-    GLuint scene_texture_id = 0;
-    int current_width = 0;
-    int current_height = 0;
+    glm::mat4 m_printer_to_world = glm::mat4(1.0f);
 
-    void setup_framebuffer(int width, int height);
-    void cleanup_framebuffer();
     void init_quad();
     
 public:
     SliceRenderer() = default;
-    ~SliceRenderer();
+    ~SliceRenderer() override;
 
     void init(const char* vertex_path, const char* fragment_path, int preview_w, int preview_h, float phys_width, float phys_height);
 
     void add_layer(int layer_id, double z_offset, const std::vector<uint8_t>& pixel_data);
     void clear_layers();
 
-    GLuint render_to_texture(int width, int height, const glm::mat4& view_matrix, const glm::mat4& projection_matrix);
-
     void update_physical_size(float phys_width, float phys_height);
+
+    void set_printer_to_world_matrix(const glm::mat4& mat) {this->m_printer_to_world = mat;}
+    
+    void render(const glm::mat4& view, const glm::mat4& projection) override;
 };
 
 #endif //PROJECT_FRAC_SLICER_SLICE_RENDERER_H

@@ -2,11 +2,10 @@
 #include "renderer/shader.h"
 
 #include <glm/ext/vector_float3.hpp>
+#include <glm/fwd.hpp>
 #include <iostream>
 
 FractalRenderer::~FractalRenderer() {
-    this->cleanup_framebuffer();
-    
     if (this->vao) glDeleteVertexArrays(1, &this->vao);
     if (this->vbo) glDeleteBuffers(1, &this->vbo);
     if (this->ebo) glDeleteBuffers(1, &this->ebo);
@@ -62,101 +61,40 @@ void FractalRenderer::update_geometry(const std::vector<float>& vertices, const 
     
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    
     glBindVertexArray(0);
 }
 
-void FractalRenderer::setup_framebuffer(int width, int height) {
-    if (this->fbo && this->current_width == width && this->current_height == height) return;
+void FractalRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
+    if (!this->shader) return;
+    
+    this->shader->use();
 
-    this->cleanup_framebuffer();
+    if (this->index_count > 0) {
+        glm::mat4 mvp = projection * view * this->model_matrix;
 
-    this->current_height = height;
-    this->current_width = width;
-
-    glGenFramebuffers(1, &this->fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
-
-    glGenTextures(1, &this->texture_id);
-    glBindTexture(GL_TEXTURE_2D, this->texture_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture_id, 0);
-
-    glGenRenderbuffers(1, &this->rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, this->rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, this->rbo);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete" << std::endl;
+        this->shader->setMat4("mvp", mvp);
+        this->shader->setVec3("color", glm::vec3(0.8f, 0.5f, 0.2f));
+        this->shader->setFloat("alpha", 1.0f);
+    
+        glBindVertexArray(this->vao);
+        glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
+    if (draw_plane && this->plane_vao) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-void FractalRenderer::cleanup_framebuffer() {
-    if (this->fbo) glDeleteFramebuffers(1, &this->fbo);
-    if (this->texture_id) glDeleteTextures(1, &this->texture_id);
-    if (this->rbo) glDeleteRenderbuffers(1, &this->rbo);
-    
-    this->fbo = 0;
-    this->texture_id = 0;
-    this->rbo = 0;
-}
+        glm::mat4 plane_mvp = projection * view * this->model_matrix * this->plane_model_matrix;
 
-GLuint FractalRenderer::render_to_texture(
-    int width, int height,
-    const glm::mat4& view_matrix,
-    const glm::mat4& projection_matrix,
-    bool draw_plane,
-    const glm::mat4& plane_model_matrix
-) {
-    if (width <= 0 || height <= 0) return 0;
+        this->shader->setMat4("mvp", plane_mvp);
+        this->shader->setVec3("color", glm::vec3(0.2f, 0.6f, 1.0f));
+        this->shader->setFloat("alpha", 0.4f);
 
-    this->setup_framebuffer(width, height);
+        glBindVertexArray(this->plane_vao);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
-    glViewport(0, 0, width, height);
-
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Цвет фона
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if (this->shader) {
-        this->shader->use();
-        glm::mat4 mvp = projection_matrix * view_matrix;
-
-        if (this->index_count > 0) {
-            this->shader->setMat4("mvp", mvp);
-            this->shader->setVec3("color", glm::vec3(0.8f, 0.5f, 0.2f));
-            this->shader->setFloat("alpha", 1.0f);
-    
-            glBindVertexArray(this->vao);
-            glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, 0);
-            glBindVertexArray(0);
-        }
-        if (draw_plane && this->plane_vao) {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-            glm::mat4 plane_mvp = mvp * plane_model_matrix;
-
-            this->shader->setMat4("mvp", plane_mvp);
-            this->shader->setVec3("color", glm::vec3(0.2f, 0.6f, 1.0f));
-            this->shader->setFloat("alpha", 0.4f);
-
-            glBindVertexArray(this->plane_vao);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            glBindVertexArray(0);
-
-            glDisable(GL_BLEND);
-        }
+        glDisable(GL_BLEND);
     }
-    
-    glDisable(GL_DEPTH_TEST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    
-    return this->texture_id;
 }
