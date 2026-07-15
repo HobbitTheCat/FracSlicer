@@ -15,23 +15,6 @@
 
 namespace LayerSlicer {
 
-    // inline arma::vec compute_distance(
-    //     const arma::mat& A,
-    //     const arma::mat& B,
-    //     const arma::vec3& normal,
-    //     double z_offset
-    // ) {
-    //     arma::vec W = B * normal;
-    //     arma::vec D = A * W - z_offset;
-    //     for (arma::uword i = 0; i < D.n_elem; i++) {
-    //         if (std::abs(D[i]) < 1e-9) {
-    //             D[i] = (D[i] >= 0.0) ? 1e-9 : -1e-9;
-    //         }
-    //     }
-
-    //     return D;
-    // }
-
     std::vector<Edge> compute_instance_intersection(
         const MeshInstance &inst,
         const MeshTemplate &tmpl,
