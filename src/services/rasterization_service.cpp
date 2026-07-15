@@ -25,7 +25,7 @@ namespace RasterizationService {
         std::vector<std::vector<ScanlineEdge>> ET(height);
 
         for (const auto& edge : context.flat_edges) {
-            auto [x0, y0] = printer.world_to_pixel(edge.p0[0], edge.p0[1]); // TODO возможно оптимальнее переписать world_to_pixel на структуру edge
+            auto [x0, y0] = printer.world_to_pixel(edge.p0[0], edge.p0[1]); // TODO: It might be better to rewrite `world_to_pixel` to use the `edge` structure
             auto [x1, y1] = printer.world_to_pixel(edge.p1[0], edge.p1[1]);
 
             if (y0 == y1) continue;

@@ -6,7 +6,7 @@
 #include <execution>
 
 namespace MeshAssembler {
-    // TODO проверить можно ли освобождать instances прямо во время вычислений что бы не все в конце а сразу по ходу вычислений
+    // TODO: Check whether it's possible to free instances directly during computations, so that they aren't all freed at the end but rather as the computations proceed
     MeshTemplate merge(
         std::vector<MeshInstance>&& instances,
         const FractalModel& model, 

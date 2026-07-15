@@ -105,7 +105,7 @@ void FractalGui::draw_interactive_tab() {
             ImGui::SliderFloat("Plane offset", &this->plane_settings.z_offset, -5.0f, 5.0f, "%.3f");
             ImGui::Spacing();
             if (ImGui::Button("Reset Plane Settings", ImVec2(-1, 0))) {
-                this->plane_settings.normal = glm::vec3(0.0f, 0.0f, 1.0f); // По умолчанию логично резать по Z
+                this->plane_settings.normal = glm::vec3(0.0f, 0.0f, 1.0f); // By default, it makes sense to cut along the Z-axis
                 this->plane_settings.z_offset = 0.0f;
                 this->plane_settings.cut_mode = 0;
             }

@@ -10,7 +10,7 @@ struct Edge {
     arma::vec2 p1;
 };
 
-struct SliceContext {       // TODO найти место получше для этого struct если оно есть
+struct SliceContext {       // TODO Find a better place for this struct, if there is one.
     int layer_id = 0;
     double z_offset = 0.0;
     arma::rowvec plane_normal;

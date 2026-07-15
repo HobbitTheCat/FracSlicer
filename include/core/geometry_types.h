@@ -31,6 +31,6 @@ struct MeshInstance {
     std::size_t automaton_state;
 };
 
-using CullingFilter = std::function<bool(const MeshInstance&)>; // этому тут тоже не место
+using CullingFilter = std::function<bool(const MeshInstance&)>; // TODO This doesn't belong here either
 
 #endif //PROJECT_FRAC_SLICER_LOCAL_MESH_H

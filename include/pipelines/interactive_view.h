@@ -2,7 +2,7 @@
 #define PROJECT_FRAC_SLICER_INTERACTIVE_VIEWER_H
 
 #include "core/fractal_model.h"
-#include "renderer/ui_structures.h"  // TODO придумать другой способ передачи плоскости
+#include "renderer/ui_structures.h"  // TODO come up with another way to transfer the plane
 
 #include <future>
 #include <atomic>

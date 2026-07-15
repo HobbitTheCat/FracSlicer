@@ -43,7 +43,7 @@ void GooEncoder::write_header_internal() {
     // 1. Magic Tag
     this->writer.write_bytes(constants::MAGIC_TAG);
     
-    // 2-7. Текстовая информация
+    // 2-7. Text Information
     this->writer.write_bytes(this->header.software_info.data);
     this->writer.write_bytes(this->header.software_version.data);
     this->writer.write_bytes(this->header.file_time.data);
@@ -51,31 +51,31 @@ void GooEncoder::write_header_internal() {
     this->writer.write_bytes(this->header.printer_type.data);
     this->writer.write_bytes(this->header.resin_profile_name.data);
 
-    // 8-10. Настройки сглаживания и размытия
+    // 8-10. Anti-aliasing and Blur Settings
     this->writer.write_u16_be(this->header.anti_aliasing_level);
     this->writer.write_u16_be(this->header.grey_level);
     this->writer.write_u16_be(this->header.blur_level);
 
-    // 11-14. Превью-изображения и разделители
+    // 11-14. Preview images and separators
     this->writer.write_bytes(this->header.small_preview.data);
     this->writer.write_bytes(constants::DELIMITER);
     this->writer.write_bytes(this->header.big_preview.data);
     this->writer.write_bytes(constants::DELIMITER);
 
-    // 15-19. Метаданные о разрешении и количестве слоев
+    // 15-19. Metadata on resolution and the number of layers
     this->writer.write_u32_be(this->header.total_layers);
     this->writer.write_u16_be(this->header.x_resolution);
     this->writer.write_u16_be(this->header.y_resolution);
     this->writer.write_bool(this->header.x_mirror);
     this->writer.write_bool(this->header.y_mirror);
 
-    // 20-23. Геометрия платформы
+    // 20-23. Platform Geometry
     this->writer.write_f32_be(this->header.x_size);
     this->writer.write_f32_be(this->header.y_size);
     this->writer.write_f32_be(this->header.z_size);
     this->writer.write_f32_be(this->header.layer_thickness);
 
-    // 24-32. Временные задержки и параметры экспозиции
+    // 24-32. Shutter speeds and exposure settings
     this->writer.write_f32_be(this->header.exposure_time);
     this->writer.write_bool(this->header.exposure_delay_mode == ExposureDelayMode::StaticTime);
     this->writer.write_f32_be(this->header.turn_off_time);
@@ -86,7 +86,7 @@ void GooEncoder::write_header_internal() {
     this->writer.write_f32_be(this->header.after_lift_time);
     this->writer.write_f32_be(this->header.after_retract_time);
 
-    // 33-42. Скорости и дистанции (основные)
+    // 33-42. Speeds and Distances (Basic)
     this->writer.write_f32_be(this->header.bottom_exposure_time);
     this->writer.write_u32_be(this->header.bottom_layers);
     this->writer.write_f32_be(this->header.bottom_lift_distance);
@@ -98,7 +98,7 @@ void GooEncoder::write_header_internal() {
     this->writer.write_f32_be(this->header.retract_distance);
     this->writer.write_f32_be(this->header.retract_speed);
 
-    // 43-50. Скорости и дистанции (вторая стадия движения)
+    // 43-50. Speeds and Distances (Second Stage of Movement)
     this->writer.write_f32_be(this->header.bottom_second_lift_distance);
     this->writer.write_f32_be(this->header.bottom_second_lift_speed);
     this->writer.write_f32_be(this->header.second_lift_distance);
@@ -108,22 +108,22 @@ void GooEncoder::write_header_internal() {
     this->writer.write_f32_be(this->header.second_retract_distance);
     this->writer.write_f32_be(this->header.second_retract_speed);
 
-    // 51-53. Мощность света и флаг Advanced Mode
+    // 51-53. Light Intensity and the Advanced Mode Flag
     this->writer.write_u16_be(this->header.bottom_light_pwm);
     this->writer.write_u16_be(this->header.light_pwm);
     this->writer.write_bool(this->header.advance_mode);
 
-    // 54-58. Статистика печати
+    // 54-58. Print Statistics
     this->writer.write_u32_be(this->header.printing_time);
     this->writer.write_f32_be(this->header.total_volume);
     this->writer.write_f32_be(this->header.total_weight);
     this->writer.write_f32_be(this->header.total_price);
     this->writer.write_bytes(this->header.price_unit.data);
 
-    // 59. Адрес начала контента (Offset of LayerContent)
+    // 59. Content Start Address (Offset of LayerContent)
     this->writer.write_u32_be(static_cast<uint32_t>(constants::HEADER_SIZE));
     
-    // 60-61. Настройки серого и переходных слоев
+    // 60-61. Gray and Transition Layer Settings
     this->writer.write_bool(this->header.grey_scale_level);
     this->writer.write_u16_be(this->header.transition_layers);
 }

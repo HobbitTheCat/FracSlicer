@@ -125,8 +125,8 @@ FractalModel import_json(const std::string &file_name) {
     return FractalModel(std::move(automaton), std::move(initial_instances));
 }
 
-// ART  стоит отметить что при парсинге я надеюсь что для каждого face вершины указаны в порядке обхода против часовой стрелки
-//      а так же что одна и та же вершина будет иметь один и тот же набор барицентрических координат
+// ART  It is worth noting that when parsing, I expect the vertices of each face to be listed in counterclockwise order
+//      and that the same vertex will have the same set of barycentric coordinates
 
 MeshTemplate parse_primitive_state(const nlohmann::json &state_json) {
     MeshTemplate mesh;
@@ -140,7 +140,7 @@ MeshTemplate parse_primitive_state(const nlohmann::json &state_json) {
     const auto& faces_json = state_json["primitive_faces"];
 
     for (std::size_t face_idx = 0; face_idx < faces_json.size(); face_idx++) {
-        mesh.face_offsets.push_back(mesh.face_edges.size()); // добавили offset для новой грани
+        mesh.face_offsets.push_back(mesh.face_edges.size()); // Added an offset for the new face
 
         const auto& face = faces_json[face_idx];        // dict
         if (!face.contains("vertices") || face["vertices"].empty()) continue;
@@ -153,12 +153,12 @@ MeshTemplate parse_primitive_state(const nlohmann::json &state_json) {
             for (std::size_t i = 0; i < unique_vertices.size(); i++) {
                 bool match = true;
                 for (std::size_t j = 0; j < coords.size(); j++) {
-                    if (std::abs(unique_vertices[i][j] - coords[j]) > 1e-6) {match = false; break;} // ART возможно это сравнение лишено смысла
+                    if (std::abs(unique_vertices[i][j] - coords[j]) > 1e-6) {match = false; break;} // ART maybe this comparison doesn't make sense
                 }
                 if (match) {v_idx = i; break;}
             }
 
-            // в случае отсутсвия этой вершины среди известных добавляем ее
+            // If this vertex is not among the known ones, we add it
             if (v_idx == INVALID_FACE) {
                 v_idx = unique_vertices.size();
                 unique_vertices.push_back(coords);
@@ -167,7 +167,7 @@ MeshTemplate parse_primitive_state(const nlohmann::json &state_json) {
             current_face_v_indices.push_back(v_idx);
         }
 
-        std::size_t num_face_vertices = current_face_v_indices.size(); // количество вершин на грань
+        std::size_t num_face_vertices = current_face_v_indices.size(); // number of vertices per edge
 
         for (std::size_t i = 0; i < num_face_vertices; i++) {
             std::size_t v_a = current_face_v_indices[i];
@@ -191,10 +191,10 @@ MeshTemplate parse_primitive_state(const nlohmann::json &state_json) {
         }
 
         if (num_face_vertices >= 3) {
-            for (std::size_t i = 1; i < num_face_vertices - 1; i++) {      // ART тут использован стандартный алгоритм для создания полигонов  
-                temp_polygons.push_back(current_face_v_indices[0]);        // просто фиксируем одну точку и обходи остальные содзавая полигон с нулевой и каждой второй
-                temp_polygons.push_back(current_face_v_indices[i]);        // не работает для невыпуклых фигур, сглаживает некопланарные
-                temp_polygons.push_back(current_face_v_indices[i + 1]);    // возможное решение - Алгоритм Ear Clipping через динамический 2D базис код отдельно в some_tests
+            for (std::size_t i = 1; i < num_face_vertices - 1; i++) {      // ART uses a standard algorithm for creating polygons here  
+                temp_polygons.push_back(current_face_v_indices[0]);        // Just set one point and iterate through the rest, creating a polygon with the zero point and every other point.
+                temp_polygons.push_back(current_face_v_indices[i]);        // Does not work for non-convex shapes; smooths non-coplanar shapes
+                temp_polygons.push_back(current_face_v_indices[i + 1]);
             } 
         }
     }
@@ -203,7 +203,7 @@ MeshTemplate parse_primitive_state(const nlohmann::json &state_json) {
 
     if (!unique_vertices.empty()) {
         std::size_t n_rows = unique_vertices.size();
-        std::size_t n_cols = unique_vertices[0].size(); // TODO проверить что тут все работает без barycentric_dim
+        std::size_t n_cols = unique_vertices[0].size(); // TODO: Check that everything works here without `barycentric_dim`
 
         mesh.barycentric_coords.set_size(n_rows, n_cols);
         for (std::size_t i = 0; i < n_rows; i++) {
