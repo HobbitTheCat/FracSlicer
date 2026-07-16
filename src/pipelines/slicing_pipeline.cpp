@@ -140,7 +140,8 @@ void SlicingPipeline::start_slicing(
 
             // progress update
             layer_id ++;
-            if (layer_id > 1000) {printf("ERROR: Slicing pipeline: Too much layers\n"); break;}
+            if ((target_iteration == 0 && layer_id > 1000) || layer_id > 5000) {printf("ERROR: Slicing pipeline: Too much layers\n"); break;}
+            
         }
 
         encoder->close();

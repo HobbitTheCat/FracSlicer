@@ -29,11 +29,13 @@ std::vector<Polygon2D> build_closed_polygons(
     std::vector<Polygon2D> result_polygons;
 
     // Step 1: Calculation of distance from each vertex to plane
-    std::size_t num_vertices = inst.control_points.n_rows;
+    arma::mat actual_positions = tmpl.barycentric_coords * inst.control_points;
+    
+    std::size_t num_vertices = actual_positions.n_rows;
     std::vector<double> distances(num_vertices);
 
     for (std::size_t i = 0; i < num_vertices; i++) {
-        arma::vec3 pt = inst.control_points.row(i).t();
+        arma::vec3 pt = actual_positions.row(i).t();
         double dist = arma::dot(pt, plane_normal) - z_offset;
 
         if (std::abs(dist) < EPSILON) dist = (dist >= 0.0) ? EPSILON : -EPSILON;
@@ -53,9 +55,9 @@ std::vector<Polygon2D> build_closed_polygons(
         double d0 = distances[edge.v0];
         double d1 = distances[edge.v1];
 
-        if (d0 * d1 < 0.0) { // проверка пересекает ли ребро плоскость
-            arma::vec3 p0 = inst.control_points.row(edge.v0).t();
-            arma::vec3 p1 = inst.control_points.row(edge.v1).t();
+        if (d0 * d1 < 0.0) {
+            arma::vec3 p0 = actual_positions.row(edge.v0).t();
+            arma::vec3 p1 = actual_positions.row(edge.v1).t();
 
             double t = d0 / (d0 - d1);
             arma::vec3 intersection_3d = p0 + t * (p1 - p0);
