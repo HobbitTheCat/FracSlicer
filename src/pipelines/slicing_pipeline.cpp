@@ -63,18 +63,18 @@ void SlicingPipeline::start_slicing(
 
             if (this->should_cancel.load()) break;
 
-            if (context.layer_meshes.empty()) {
+            // Step 2: Layer slicing
+            printf("Step 2: Layer slicing\n");
+            LayerSlicer::slice_layer(context, *model);
+
+            if (context.flat_edges.empty()) {
                 if (has_found_geometry) { printf("Fractal has ended\n"); break;}  // if fractal has ended
                 else {layer_id++; printf("Fractal did not start\n"); continue;}   // if fractal did not start
             } else {
                 printf("There is %ld instances\n", context.layer_meshes.size());
                 has_found_geometry = true;
             }
-
-            // Step 2: Layer slicing
-            printf("Step 2: Layer slicing\n");
-            LayerSlicer::slice_layer(context, *model);
-
+            
             // Step 3: Rasterization
             printf("Step 3: Rasterization\n");
             RasterizationService::rasterize_layer(context, printer, {1920, 1080, true});
@@ -100,7 +100,7 @@ void SlicingPipeline::start_slicing(
 
             // progress update
             layer_id ++;
-            if (layer_id > 1000) {printf("ERROR: Slicing pipeline: Too much layers\n"); break;}
+            // if ((layer_id > 1000 && target_iteration == 0) || layer_id > 5000) {printf("ERROR: Slicing pipeline: Too much layers\n"); break;}
         }
 
         encoder->close();
