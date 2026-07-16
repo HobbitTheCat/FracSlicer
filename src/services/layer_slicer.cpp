@@ -44,11 +44,14 @@ namespace LayerSlicer {
         const double EPSILON = 1e-7;
 
         //Step 1: calculation distance to plane
-        std::size_t num_vertices = inst.control_points.n_rows;
+        // std::size_t num_vertices = inst.control_points.n_rows;
+        arma::mat actual_positions = tmpl.barycentric_coords * inst.control_points;
+        std::size_t num_vertices = actual_positions.n_rows;
         std::vector<double> distances(num_vertices);
 
         for (std::size_t i = 0; i < num_vertices; i++) {
-            arma::vec3 pt = inst.control_points.row(i).t();
+            // arma::vec3 pt = inst.control_points.row(i).t();
+            arma::vec3 pt = actual_positions.row(i).t();
             double dist = arma::dot(pt, plane_normal) - z_offset;
 
             if (std::abs(dist) < EPSILON) dist = EPSILON;
@@ -80,8 +83,10 @@ namespace LayerSlicer {
                 double d1 = distances[edge.v1];
 
                 if (d0 * d1 < 0.0) {
-                    arma::vec3 p0 = inst.control_points.row(edge.v0).t();
-                    arma::vec3 p1 = inst.control_points.row(edge.v1).t();
+                    // arma::vec3 p0 = inst.control_points.row(edge.v0).t();
+                    // arma::vec3 p1 = inst.control_points.row(edge.v1).t();
+                    arma::vec3 p0 = actual_positions.row(edge.v0).t();
+                    arma::vec3 p1 = actual_positions.row(edge.v1).t();
 
                     double t = d0 / (d0 - d1);
                     arma::vec3 intersection = p0 + t * (p1 - p0);
