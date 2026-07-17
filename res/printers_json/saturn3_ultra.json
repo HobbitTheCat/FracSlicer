@@ -2,22 +2,22 @@
   "printer": {
     "name": "Saturn 3 Ultra",
     "type": "Default",
-    "resolution_x": 11520,
-    "resolution_y": 6480,
+    "resolution_x": 15120,
+    "resolution_y": 6230,
     "x_mirror": false,
     "y_mirror": false,
-    "size_x_mm": 218.88,
-    "size_y_mm": 122.88,
-    "size_z_mm": 260.0
+    "size_x_mm": 211.68,
+    "size_y_mm": 118.37,
+    "size_z_mm": 220.0
   },
   "print_profile": {
     "name": "Standard 8K Resin",
     "layer_thickness_mm": 0.05,
     "bottom_layer_count": 5,
-    "transition_layers": 2,
+    "transition_layers": 10,
     
-    "normal_exposure_s": 2.5,
-    "bottom_exposure_s": 30.0,
+    "normal_exposure_s": 2.3,
+    "bottom_exposure_s": 32.0,
     
     "exposure_delay_mode": 1,
     "turn_off_time_s": 0.0,
@@ -28,7 +28,7 @@
     
     "before_lift_time_s": 0.0,
     "after_lift_time_s": 0.0,
-    "rest_time_after_retract_s": 0.5,
+    "rest_time_after_retract_s": 1.2,
     
     "bottom_lift_distance_mm": 3.0,
     "bottom_lift_speed_mm_min": 60.0,
