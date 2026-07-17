@@ -2,6 +2,9 @@ build/
 .devenv/
 .direnv/
 devenv.lock
+data/
+Data/
+*.zip
 devenv.yaml
 .envrc
 

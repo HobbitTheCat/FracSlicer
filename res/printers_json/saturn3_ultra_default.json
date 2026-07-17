@@ -1,0 +1,63 @@
+{
+  "printer": {
+    "name": "Saturn 3 Ultra",
+    "type": "Default",
+    "resolution_x": 11520,
+    "resolution_y": 6480,
+    "x_mirror": false,
+    "y_mirror": false,
+    "size_x_mm": 218.88,
+    "size_y_mm": 122.88,
+    "size_z_mm": 260.0
+  },
+  "print_profile": {
+    "name": "Standard 8K Resin",
+    "layer_thickness_mm": 0.05,
+    "bottom_layer_count": 5,
+    "transition_layers": 10,
+    
+    "normal_exposure_s": 2.3,
+    "bottom_exposure_s": 32.0,
+    
+    "exposure_delay_mode": 1,
+    "turn_off_time_s": 0.0,
+    
+    "bottom_before_lift_time_s": 0.0,
+    "bottom_after_lift_time_s": 0.0,
+    "bottom_rest_time_after_retract_s": 0.5,
+    
+    "before_lift_time_s": 0.0,
+    "after_lift_time_s": 0.0,
+    "rest_time_after_retract_s": 0.5,
+    
+    "bottom_lift_distance_mm": 3.0,
+    "bottom_lift_speed_mm_min": 60.0,
+    "bottom_retract_distance_mm": 3.0,
+    "bottom_retract_speed_mm_min": 150.0,
+    
+    "bottom_second_lift_distance_mm": 4.0,
+    "bottom_second_lift_speed_mm_min": 180.0,
+    "bottom_second_retract_distance_mm": 4.0,
+    "bottom_second_retract_speed_mm_min": 200.0,
+
+    "lift_distance_mm": 3.0,
+    "lift_speed_mm_min": 60.0,
+    "retract_distance_mm": 3.0,
+    "retract_speed_mm_min": 150.0,
+    
+    "second_lift_distance_mm": 4.0,
+    "second_lift_speed_mm_min": 180.0,
+    "second_retract_distance_mm": 4.0,
+    "second_retract_speed_mm_min": 200.0,
+    
+    "bottom_light_pwm": 255,
+    "light_pwm": 255,
+    
+    "advance_mode": false,
+    "grey_scale_level": true,
+    
+    "anti_aliasing_level": 0,
+    "grey_level": 0,
+    "blur_level": 0
+  }
+}
