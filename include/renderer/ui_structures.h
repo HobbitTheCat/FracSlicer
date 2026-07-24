@@ -2,8 +2,6 @@
 
 #include <glm/vec3.hpp>
 
-// TODO rewrite
-
 struct PlaneSettings {
     bool enabled = false;
     glm::vec3 normal = glm::vec3(0.0f, 0.0f, 1.0f);
