@@ -27,6 +27,7 @@ This project was developed by [**Egor Semenov-Tyan-Shanskiy**](https://github.co
 
 ### Related Projects
 * [**AutoFrac**](https://github.com/borisbordeaux/AutoFrac): A modeling framework developed at LIB for constructing and manipulating complex IFS fractals. Fractals generated in AutoFrac can be exported (via JSON configurations) and sliced directly using this application.
+* **FractalRabbit**: A project developed by Théo Leman focused on the tetrahedralization of STL 3D models and their subsequent volumetric fractalization.
 
 --- 
 
