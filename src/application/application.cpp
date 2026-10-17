@@ -80,7 +80,8 @@ void Application::Init() {
         this->slice_renderer,
         this->scene,
         this->current_model,
-        this->camera
+        this->camera,
+        this->curren_geometry
     );
 }
 
@@ -101,9 +102,11 @@ void Application::Run() {
     while (!glfwWindowShouldClose(this->window)) {
         glfwPollEvents();
 
-        RenderGeometry new_geo;
-        if (this->interactive_viewer.update(new_geo)) {
-            this->fractal_renderer.update_geometry(new_geo.vertices, new_geo.indices);
+        if (this->interactive_viewer.update(this->curren_geometry)) {
+            this->fractal_renderer.update_geometry(
+                this->curren_geometry.vertices, 
+                this->curren_geometry.indices
+            );
         }
 
         std::vector<LayerPreview> new_previews;

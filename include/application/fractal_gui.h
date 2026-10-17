@@ -25,6 +25,7 @@
 #include "renderer/fractal_renderer.h"
 #include "renderer/slice_renderer.h"
 #include "renderer/scene.h"
+#include "services/geometry_converter.h"
 
 #include <memory>
 #include <string>
@@ -39,6 +40,7 @@ private:
 
     std::shared_ptr<const FractalModel>& current_model;
     CameraControls& camera;
+    const RenderGeometry& current_geometry;
 
     int iteration = 0;
     PlaneSettings plane_settings;
@@ -63,8 +65,9 @@ public:
         SliceRenderer& sr,
         Scene& scn,
         std::shared_ptr<const FractalModel>& model,
-        CameraControls& cam
-    ) : viewer(v), slicer(s), frac_renderer(fr), slice_renderer(sr), scene(scn), current_model(model), camera(cam) {}
+        CameraControls& cam,
+        const RenderGeometry& current_geometry
+    ) : viewer(v), slicer(s), frac_renderer(fr), slice_renderer(sr), scene(scn), current_model(model), camera(cam), current_geometry(current_geometry) {}
 
     void render();
 };

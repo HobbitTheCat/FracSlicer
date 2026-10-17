@@ -27,6 +27,7 @@
 #include "renderer/fractal_renderer.h"
 #include "renderer/slice_renderer.h"
 #include "fractal_gui.h"
+#include "services/geometry_converter.h"
 
 #include <memory>
 
@@ -44,6 +45,7 @@ private:
     SliceRenderer slice_renderer;
 
     Scene scene;
+    RenderGeometry curren_geometry;
 
     std::unique_ptr<FractalGui> gui;
 

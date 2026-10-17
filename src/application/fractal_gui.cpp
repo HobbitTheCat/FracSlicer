@@ -20,8 +20,10 @@
 #include "io/fractal_import.h"
 
 #include "imgui/imgui.h"
+#include "io/stl_export.h"
 #include "imguifiledialog/ImGuiFileDialog.h"
 #include <cstdint>
+#include <cstdio>
 #include <exception>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_transform.hpp>
@@ -29,6 +31,7 @@
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
 #include <glm/trigonometric.hpp>
+#include <iostream>
 #include <memory>
 
 void FractalGui::render() {
@@ -48,6 +51,18 @@ void FractalGui::render() {
             std::string file_path = ImGuiFileDialog::Instance()->GetFilePathName();
             FractalModel new_model = json_import::import_json(file_path);
             this->current_model = std::make_shared<FractalModel>(std::move(new_model));
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+    if (ImGuiFileDialog::Instance()->Display("SaveStlDlgKey", ImGuiWindowFlags_NoCollapse, ImVec2(700, 300))) {
+        if (ImGuiFileDialog::Instance()->IsOk()) {
+            std::string file_path = ImGuiFileDialog::Instance()->GetFilePathName();
+            try {
+                utils::stl_export(this->current_geometry, file_path);
+            } catch (const std::exception& e) {
+                printf("STL Export failde\n");
+                std::cerr << "STL Export failed: " << e.what() << std::endl;
+            }
         }
         ImGuiFileDialog::Instance()->Close();
     }
@@ -141,6 +156,15 @@ void FractalGui::draw_interactive_tab() {
 
     if (viewer.is_working() && ImGui::Button("Cancel", ImVec2(-1 ,0))) {
         viewer.cancel();
+    }
+
+    if (ImGui::Button("Save as STL", ImVec2(-1, 40))) {
+        if (!current_geometry.indices.empty()) {
+            IGFD::FileDialogConfig config;
+            config.path = "res/";
+            config.flags |= ImGuiFileDialogFlags_Modal;
+            ImGuiFileDialog::Instance()->OpenDialog("SaveStlDlgKey", "Save STL file", ".stl", config);
+        } 
     }
 }
 

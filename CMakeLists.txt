@@ -1,30 +1,33 @@
 cmake_minimum_required(VERSION 3.24)
-project(IFS_Slicer LANGUAGES CXX CUDA)
+project(IFS_Slicer LANGUAGES CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CUDA_STANDARD 20)
-set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 --compiler-options '-fPIC'")
-
 option(ENABLE_DEBUG_FEATURES "Enable custom debug code parts" OFF)
 
 find_package(glfw3 REQUIRED)
+
+if(TARGET glfw3::glfw)
+    set(GLFW_TARGET glfw3::glfw)
+elseif(TARGET glfw)
+    set(GLFW_TARGET glfw)
+else()
+    set(GLFW_TARGET glfw3)
+endif()
+
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(TBB REQUIRED)
 find_package(BLAS REQUIRED)
-find_package(CUDAToolkit REQUIRED)
 
 file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 list(FILTER SOURCE_FILES EXCLUDE REGEX "src/app_.*\\.cpp")
-file(GLOB_RECURSE CUDA_FILES "src/*.cu")
 file(GLOB_RECURSE VENDOR_FILES "vendor/*.cpp")
 
-add_library(project_core STATIC ${SOURCE_FILES} ${CUDA_FILES} ${VENDOR_FILES})
+add_library(project_core STATIC ${SOURCE_FILES} ${VENDOR_FILES})
 
 target_include_directories(project_core 
     PUBLIC 
@@ -54,13 +57,12 @@ if (ENABLE_DEBUG_FEATURES)
 endif()
 
 target_link_libraries(project_core PUBLIC
-    glfw
+    ${GLFW_TARGET}
     GLEW::GLEW
     OpenGL::GL
     armadillo
     ${BLAS_LIBRARIES}
     TBB::tbb
-    CUDA::cudart
     dl
 )
 
